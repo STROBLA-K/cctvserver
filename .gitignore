@@ -1,0 +1,15 @@
+# Virtual Environment
+venvs/
+.venvs/
+env/
+*.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Other common files
+.vscode/
+.DS_Store
