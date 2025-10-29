@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mock CCTV Server - Static Documentation</title>
+    <style>
+        /* Styles based on the original Flask app's home page */
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 50px auto; 
+            padding: 20px;
+            background: #f0f0f0; /* Light gray background */
+            color: #333;
+        }
+        h1 { color: #333; }
+        h2 { border-bottom: 2px solid #ddd; padding-bottom: 5px; }
+        .endpoint { 
+            background: white; 
+            padding: 15px; 
+            margin: 15px 0; 
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        a { 
+            color: #007bff; 
+            text-decoration: none; 
+            font-weight: bold;
+        }
+        a:hover { text-decoration: underline; }
+        .snapshot-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .mock-image { 
+            width: 640px; 
+            height: 480px;
+            background: darkgray; /* Mimic the image background */
+            border: 2px solid #333;
+            border-radius: 5px;
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+        }
+        .overlay-text {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: lime; /* CCTV signature color */
+            font-family: monospace;
+            line-height: 1.5;
+            text-shadow: 1px 1px 2px black;
+        }
+        .rec-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 20px;
+            height: 20px;
+            background-color: red;
+            border-radius: 50%;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 0.9em;
+            color: #c7254e;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎥 Mock CCTV Camera Documentation (Static)</h1>
+    <p>This GitHub Pages site serves as **documentation** and a **mock interface** for the <strong>CCTV Server Simulation</strong> project.</p>
+    <p><strong>Note:</strong> The actual server logic (Flask, image generation, live data) is not running here, as GitHub Pages only hosts static files.</p>
+    
+    <hr>
+
+    <h2>Mock Snapshot Interface</h2>
+    <p>This simulates what the live stream would look like.</p>
+    <div class="snapshot-container">
+        <div class="mock-image">
+            <div class="overlay-text">
+                MOCK CCTV - CAMERA 01<br>
+                <span id="timestamp-mock">Loading...</span><br>
+                Frame: 999
+            </div>
+            <div class="rec-indicator"></div>
+        </div>
+    </div>
+    
+    <hr>
+
+    <h2>Original Server Endpoints (For Reference)</h2>
+    <p>These were the available routes when running the Python server locally or on a VPS:</p>
+    
+    <div class="endpoint">
+        <h3>📸 Get Snapshot (`/snapshot`)</h3>
+        <p><strong>Method:</strong> <code>GET</code></p>
+        <p><strong>Returns:</strong> <code>image/jpeg</code></p>
+        <p><strong>Description:</strong> Used by tools like Power Automate to fetch the latest camera image.</p>
+    </div>
+    
+    <div class="endpoint">
+        <h3>📊 Get Camera Status (`/status`)</h3>
+        <p><strong>Method:</strong> <code>GET</code></p>
+        <p><strong>Returns:</strong> <code>application/json</code></p>
+        <p><strong>Description:</strong> Provides camera metadata (online status, resolution, timestamp).</p>
+        <pre style="background:#eee; padding:10px; border-radius:3px;">
+{
+    "camera_id": "MOCK-CAM-01",
+    "status": "online",
+    "timestamp": "2025-10-29T13:11:00.000",
+    "resolution": "640x480"
+}
+        </pre>
+    </div>
+    
+    <hr>
+
+    <h2>Power Automate Integration Guide</h2>
+    <p>When the server is live (e.g., on a local network or Heroku), use the following steps:</p>
+    <ol>
+        <li>Use the <strong>HTTP</strong> action.</li>
+        <li>Set Method to <code>GET</code>.</li>
+        <li>Set URI to <code>http://YOUR_SERVER_IP:5000/snapshot</code></li>
+        <li>The response will contain the image data ready for saving or processing.</li>
+    </ol>
+
+    <script>
+        // Static JS to only display the current time for the mock interface
+        function updateMockTimestamp() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            
+            const timestamp = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+            document.getElementById('timestamp-mock').textContent = timestamp;
+        }
+
+        // Run immediately and then update every second to look 'live'
+        updateMockTimestamp();
+        setInterval(updateMockTimestamp, 1000);
+    </script>
+</body>
+</html>
