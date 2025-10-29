@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mock CCTV Server - Static Documentation</title>
     <style>
-        /* Styles based on the original Flask app's home page */
+        /* Styles remain the same for consistency */
         body { 
             font-family: Arial, sans-serif; 
             max-width: 800px; 
             margin: 50px auto; 
             padding: 20px;
-            background: #f0f0f0; /* Light gray background */
+            background: #f0f0f0;
             color: #333;
         }
         h1 { color: #333; }
@@ -36,7 +36,7 @@
         .mock-image { 
             width: 640px; 
             height: 480px;
-            background: darkgray; /* Mimic the image background */
+            background: darkgray;
             border: 2px solid #333;
             border-radius: 5px;
             display: inline-block;
@@ -47,7 +47,7 @@
             position: absolute;
             top: 10px;
             left: 10px;
-            color: lime; /* CCTV signature color */
+            color: lime;
             font-family: monospace;
             line-height: 1.5;
             text-shadow: 1px 1px 2px black;
@@ -61,6 +61,12 @@
             background-color: red;
             border-radius: 50%;
         }
+        .motion-box {
+            position: absolute;
+            transition: all 0.5s ease-in-out; /* Smooth movement */
+            background: rgba(255, 0, 0, 0.4); /* Highlight for motion */
+            border: 1px dashed red;
+        }
         code {
             background: #f4f4f4;
             padding: 2px 5px;
@@ -73,18 +79,17 @@
 <body>
     <h1>🎥 Mock CCTV Camera Documentation (Static)</h1>
     <p>This GitHub Pages site serves as **documentation** and a **mock interface** for the <strong>CCTV Server Simulation</strong> project.</p>
-    <p><strong>Note:</strong> The actual server logic (Flask, image generation, live data) is not running here, as GitHub Pages only hosts static files.</p>
     
     <hr>
 
-    <h2>Mock Snapshot Interface</h2>
-    <p>This simulates what the live stream would look like.</p>
+    <h2>Mock Live Feed Interface</h2>
+    <p>This uses client-side JavaScript to simulate a changing video feed.</p>
     <div class="snapshot-container">
-        <div class="mock-image">
+        <div class="mock-image" id="mock-feed">
             <div class="overlay-text">
                 MOCK CCTV - CAMERA 01<br>
                 <span id="timestamp-mock">Loading...</span><br>
-                Frame: 999
+                Frame: <span id="frame-count">0</span>
             </div>
             <div class="rec-indicator"></div>
         </div>
@@ -92,60 +97,69 @@
     
     <hr>
 
-    <h2>Original Server Endpoints (For Reference)</h2>
-    <p>These were the available routes when running the Python server locally or on a VPS:</p>
+    <h2>Simulated Screenshot Endpoint (For Power Automate)</h2>
+    <p>To simulate a successful screenshot GET request, simply point your HTTP tool to the static image file:</p>
     
     <div class="endpoint">
-        <h3>📸 Get Snapshot (`/snapshot`)</h3>
-        <p><strong>Method:</strong> <code>GET</code></p>
-        <p><strong>Returns:</strong> <code>image/jpeg</code></p>
-        <p><strong>Description:</strong> Used by tools like Power Automate to fetch the latest camera image.</p>
-    </div>
-    
-    <div class="endpoint">
-        <h3>📊 Get Camera Status (`/status`)</h3>
-        <p><strong>Method:</strong> <code>GET</code></p>
-        <p><strong>Returns:</strong> <code>application/json</code></p>
-        <p><strong>Description:</strong> Provides camera metadata (online status, resolution, timestamp).</p>
-        <pre style="background:#eee; padding:10px; border-radius:3px;">
-{
-    "camera_id": "MOCK-CAM-01",
-    "status": "online",
-    "timestamp": "2025-10-29T13:11:00.000",
-    "resolution": "640x480"
-}
-        </pre>
+        <h3>📸 Get Snapshot / Screenshot</h3>
+        <p><strong>Actual Static URL:</strong> <a href="snapshot.jpg" target="_blank">snapshot.jpg</a></p>
+        <p><strong>Simulated GET Method:</strong> <code>GET</code></p>
+        <p><strong>Simulated Returns:</strong> <code>image/jpeg</code></p>
+        <p>The image file **<a href="snapshot.jpg" target="_blank">snapshot.jpg</a>** is the closest static equivalent to getting a live screenshot file via HTTP.</p>
     </div>
     
     <hr>
 
-    <h2>Power Automate Integration Guide</h2>
-    <p>When the server is live (e.g., on a local network or Heroku), use the following steps:</p>
-    <ol>
-        <li>Use the <strong>HTTP</strong> action.</li>
-        <li>Set Method to <code>GET</code>.</li>
-        <li>Set URI to <code>http://YOUR_SERVER_IP:5000/snapshot</code></li>
-        <li>The response will contain the image data ready for saving or processing.</li>
-    </ol>
-
+    <h2>Original Server Endpoints (For Reference)</h2>
     <script>
-        // Static JS to only display the current time for the mock interface
-        function updateMockTimestamp() {
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
+        const feedElement = document.getElementById('mock-feed');
+        const timestampElement = document.getElementById('timestamp-mock');
+        const frameCountElement = document.getElementById('frame-count');
+        let frameCounter = 0;
+
+        // Function to simulate random motion detection
+        function simulateMotion() {
+            // Remove old motion boxes
+            document.querySelectorAll('.motion-box').forEach(box => box.remove());
             
-            const timestamp = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-            document.getElementById('timestamp-mock').textContent = timestamp;
+            // Create new random motion boxes
+            const numBoxes = Math.floor(Math.random() * 3) + 1; // 1 to 3 boxes
+            for (let i = 0; i < numBoxes; i++) {
+                const box = document.createElement('div');
+                box.className = 'motion-box';
+                const size = Math.floor(Math.random() * 70) + 30; // 30px to 100px
+                const x = Math.floor(Math.random() * (640 - size));
+                const y = Math.floor(Math.random() * (480 - size));
+
+                box.style.width = `${size}px`;
+                box.style.height = `${size}px`;
+                box.style.left = `${x}px`;
+                box.style.top = `${y}px`;
+                feedElement.appendChild(box);
+            }
         }
 
-        // Run immediately and then update every second to look 'live'
-        updateMockTimestamp();
-        setInterval(updateMockTimestamp, 1000);
+        // Function to update the mock interface (timestamp, frame count, motion)
+        function updateMockFeed() {
+            // 1. Update timestamp
+            const now = new Date();
+            const timestamp = now.toLocaleTimeString('en-US', { hour12: false });
+            const dateStamp = now.toLocaleDateString('en-US');
+            timestampElement.textContent = `${dateStamp} ${timestamp}`;
+            
+            // 2. Update frame counter
+            frameCounter++;
+            frameCountElement.textContent = frameCounter;
+            
+            // 3. Update motion every 2 seconds
+            if (frameCounter % 2 === 0) {
+                 simulateMotion();
+            }
+        }
+
+        // Run immediately and then update every second (1000ms)
+        updateMockFeed();
+        setInterval(updateMockFeed, 1000);
     </script>
 </body>
 </html>
